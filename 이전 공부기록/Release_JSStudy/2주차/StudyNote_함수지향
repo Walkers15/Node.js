@@ -1,0 +1,113 @@
+191119
+값으로써의 함수와 콜백
+JS에서는 함수도 객체다! - 함수를 리턴값이나 파라미터 등으로도 사용할 수 있다.
+
+클로저
+내부함수가 외부함수의 Context에 접근할 수 있도록 하는 것.
+function outter(){
+    function inner(){
+        var title = 'coding everybody';  //title은 inner함수 안의 변수(내부함수의 지역변수)
+        alert(title);
+    }
+    inner();
+}
+outter();
+
+function outter(){
+    var title = 'coding everybody';  
+    function inner(){        
+        alert(title); //title의 outter(외부함수)의 지역변수임에도 접근하여 출력할 수 있음
+    }
+    inner();
+}
+outter();
+
+클로저로 객체지향 캡슐화 & private 구현하기
+(예시)
+var makeCounter = function() {
+  var privateCounter = 0;
+  function changeBy(val) {
+    privateCounter += val;
+  }
+  return {
+    increment: function() {
+      changeBy(1);
+    },
+    decrement: function() {
+      changeBy(-1);
+    },
+    value: function() {
+      return privateCounter;
+    }
+  }  
+};
+
+var counter1 = makeCounter();
+var counter2 = makeCounter();
+alert(counter1.value()); /* 0 */
+counter1.increment();
+counter1.increment();
+alert(counter1.value()); /* 2 */
+counter1.decrement();
+alert(counter1.value()); /* 1 */
+alert(counter2.value()); /* 0 */
+
+var 을 통해 같은 함수를 호출해서 다른 변수들 생성, counter1의 privatecounter와 counter2의 privatecounter는 다른 값! 즉 서로가 서로의 값을 변경할 수 없고,
+각자의 privatecounter도 makeCounter함수 안에 리턴값의로 정의된 세 개의 함수로만 바꿀 수 있음.
+
+※반복문의 클로저 오류
+function showHelp(help) {
+  document.getElementById('help').innerHTML = help;
+}
+
+function setupHelp() {
+  var helpText = [
+      {'id': 'email', 'help': 'Your e-mail address'},
+      {'id': 'name', 'help': 'Your full name'},
+      {'id': 'age', 'help': 'Your age (you must be over 16)'}
+    ];
+
+  for (var i = 0; i < helpText.length; i++) {
+    var item = helpText[i];
+    document.getElementById(item.id).onfocus = function() {
+      showHelp(item.help);
+    }
+  }
+}
+
+setupHelp();  --오류! 왜냐면 몬든 함수들의 하나의 변수 환경(item)을 공유하기 떄문
+해결 방안 - 함수들이 각각의 클로저를 가지게 하면 됨
+function showHelp(help) {
+  document.getElementById('help').innerHTML = help;
+}
+
+function makeHelpCallback(help) {
+  return function() {
+    showHelp(help);
+  };
+}
+
+function setupHelp() {
+  var helpText = [
+      {'id': 'email', 'help': 'Your e-mail address'},
+      {'id': 'name', 'help': 'Your full name'},
+      {'id': 'age', 'help': 'Your age (you must be over 16)'}
+    ];
+
+  for (var i = 0; i < helpText.length; i++) {
+    var item = helpText[i];
+    document.getElementById(item.id).onfocus = makeHelpCallback(item.help);
+  }
+}
+
+setupHelp();
+-makeHelpCallback함수의 클로저의 지역 변수(fuction)을 통해 개인이 클로저를 가지게 한다.
+
+함수
+함수의 호출 apply & call
+apply 메소드에 대해
+apply의 첫 번째 인자는 함수가 실행될 맥락이다. 즉, 그 함수가 실행될 객체를 지정해주면 된다. 실제로 첫 번째 파라미터에 null을 넘겨주게 되면,
+apply가 실행된 함수 인스턴스는 전역객체(브라우저에서는 window)를 맥락으로 실행되게 된다.
+자바스크립트가 흥미로운 부분은, 각각의 함수(예를 들면 Sum)등을, 한 객체 소속의 메소드(혹은 객체)가 되게 할 수 있다는 점이다.
+즉, 한 객체가 함수 객체를 포함하게 되면, 그 객체에서 함수 객채를 그 객체의 소유물인 것 처럼 다룰 수 있다는 것이다.
+

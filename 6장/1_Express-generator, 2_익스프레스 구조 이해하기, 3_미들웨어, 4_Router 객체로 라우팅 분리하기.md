@@ -1,8 +1,3 @@
----
-
-
----
-
 <h1 id="express-generator로-빠르게-설치하기">6.1 Express-generator로 빠르게 설치하기</h1>
 <p>npm install express-generator 로 설치<br>
 express &lt;프로젝트명&gt; 으로 프로젝트 실행</p>

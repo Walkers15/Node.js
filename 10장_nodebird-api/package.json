@@ -4,13 +4,13 @@
   "description": "NodeBird API 서버",
   "main": "app.js",
   "scripts": {
-    "start": "pm2 start app.js --watch --ignore-watch=\"uploads/*\" --no-daemon",
+    "start": "nodemon app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Shoon100",
-  "license": "MIT",
+  "author": "Zero Cho",
+  "license": "ISC",
   "dependencies": {
-    "bcrypt": "^3.0.5",
+    "bcrypt": "^3.0.6",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.4",
     "dotenv": "^7.0.0",
@@ -22,7 +22,10 @@
     "passport-kakao": "0.0.5",
     "passport-local": "^1.0.0",
     "pug": "^2.0.1",
-    "sequelize": "^4.43.0",
+    "sequelize": "^5.10.2",
     "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
   }
 }

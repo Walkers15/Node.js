@@ -30,8 +30,4 @@ db.User.belongsToMany(db.User, {
 });
 db.User.hasMany(db.Domain);
 db.Domain.belongsTo(db.User);
-db.User.findAll({})
-    .then((result)=>{
-      console.log(result);
-    });
 module.exports = db;

@@ -1,10 +1,29 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
+const url = require('url');
 
 const { verifyToken, apiLimiter } = require('./middlewares');
 const { Domain, User, Post, Hashtag } = require('../models');
 
 const router = express.Router();
+
+//router.use(cors()); 모든 도메인의 접근 허용 > 보안  위험
+router.use(async(req, res ,next)=>{
+    const domain = await Domain.findOne({
+        where: { host: url.parse(req.get('origin')).host} //요청 보낸 도메인 비교하게 함
+    });
+    if(domain){
+        cors({origin: req.get('origin')})(req,res,next);
+    }else{
+        next();
+    }
+});
+
+//router.use(cors())
+//router.use((req,res,next)=>{ //둘이 같은 거임!
+//    cors()(req,res,next);
+//});
 
 router.post('/token', apiLimiter, async (req, res)=>{
     const { clientSecret } = req.body;
@@ -16,6 +35,7 @@ router.post('/token', apiLimiter, async (req, res)=>{
                 attribute: ['nick','id'],
             },
         });
+        console.log(domain);
         if(!domain){
             return res.status(401).json({
                 code: 401,
@@ -29,7 +49,6 @@ router.post('/token', apiLimiter, async (req, res)=>{
             expiresIn: '30m',//30분
             issuer: 'nodebird',
         });
-        console.log('토큰발급');
         return res.json({
             code: 200,
             message: '토큰이 발급되었습니다.',

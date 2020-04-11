@@ -43,4 +43,8 @@ router.get('/mypost', async(req, res, next)=>{
     }
 });
 
+router.get('/', (req, res)=>{
+    res.render('main',{key: process.env.CLIENT_SECRET});
+});
+
 module.exports = router;

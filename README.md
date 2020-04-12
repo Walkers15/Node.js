@@ -24,4 +24,4 @@ Node.js를 공부하며 남긴 기록입니다!
 
 생활코딩 WEBn - JAVASCRIPT & Node.js
 
-Node.js 교과서 - 조현영 저, 길벗
+Node.js 교과서 - 조현영 저, 길벗 

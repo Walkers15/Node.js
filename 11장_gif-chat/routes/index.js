@@ -1,4 +1,8 @@
 const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
 
 const Room = require('../schemas/room');
 const Chat = require('../schemas/chat');
@@ -96,6 +100,41 @@ router.post('/room/:id/chat', async(req,res,next)=>{
     }catch (e) {
         console.error(e);
         next(e);
+    }
+});
+
+fs.readdir('uploads',(error)=>{
+    if(error){
+        console.error('uploads폴더가 없어 생성합니다.');
+        fs.mkdirSync('uploads');
+    }
+});
+const upload = multer({
+   storage: multer.diskStorage({
+        destination(req,file,cb){
+            cb(null, 'uploads/');
+        },
+        filename(req, file, cb){
+            const ext = path.extname(file.originalname);
+            cb(null,path.basename(file.originalname, ext) + Date.now() + ext);
+        },
+        limits:{fileSize: 20 * 1024 * 1024},
+    })
+});
+
+router.post('/room/:id/gif', upload.single('gif'), async(req, res, next)=>{
+    try{
+        const chat = new Chat({
+            room: req.params.id,
+            user: req.session.color,
+            gif: req.file.filename,
+        });
+        await chat.save();
+        req.app.get('io').of('/chat').to(req.params.id).emit('chat',chat);
+        res.send('ok');
+    }catch(error){
+        console.error(error);
+        next(error);
     }
 });
 

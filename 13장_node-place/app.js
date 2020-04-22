@@ -32,6 +32,7 @@ app.use(session({
 }));
 app.use(flash());
 
+
 app.use('/', index);
 
 app.use((req, res, next) => {

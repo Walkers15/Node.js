@@ -12,3 +12,5 @@ const historySchema = new Schema({
         default: Date.now,
     },
 });
+
+module.exports = mongoose.model('History',historySchema);

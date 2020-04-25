@@ -9,7 +9,7 @@ Node.js를 공부하며 남긴 기록입니다!
 - 위의 SNS서비스의 API를 제공하는 웹 API 서버
 - Socket.IO, MySQL을 이용한 실시간 GIF 채팅방
 - 회원 정보를 이용할 수 있는 Auction
-- Google Place API와 MongoDB를 사용한 장소 검색 서비스
+- Google Place API와 MongoDB를 사용한 장소 검색 서비스 - Google Api의 http 보안 이슈로 localhost에서만 사용할 수 있습니다.
 
 또한 다음과 같은 기능을 제작하는 것을 목표로 합니다.
 

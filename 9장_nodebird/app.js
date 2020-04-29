@@ -5,7 +5,11 @@ const path = require('path');
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
+const helmet = require('helmet');
+const hpp = require('hpp');
+const RedisStore = require('connect-redis')(session);
 require('dotenv').config();
+const redis = require('redis');
 
 const pageRouter = require('./routes/page');
 const authRouter = require('./routes/auth');
@@ -13,6 +17,13 @@ const postRouter = require('./routes/post');
 const userRouter = require('./routes/user');
 const { sequelize } = require('./models');
 const passportConfig = require('./passport');
+const logger = require('./logger');
+
+const host = process.env.REDIS_HOST;
+const port = process.env.REDIS_PORT;
+const pass = process.env.REDIS_PASSWORD;
+const redisClient = redis.createClient(port,host);
+redisClient.auth(pass);
 
 const app = express();
 sequelize.sync();
@@ -20,9 +31,14 @@ passportConfig(passport);
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-app.set('port', process.env.PORT || 80);
-
-app.use(morgan('dev'));
+app.set('port', process.env.PORT || 8001);
+if(process.env.NODE_ENV === 'production'){
+    app.use(morgan('combined'));
+    app.use(helmet());
+    app.use(hpp());
+}else{
+    app.use(morgan('dev'));
+}
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/img', express.static(path.join(__dirname,'uploads')));
@@ -37,6 +53,13 @@ app.use(session({
         httpOnly: true,
         secure: false,
     },
+    store: new RedisStore({
+        client: redisClient,
+        host: process.env.REDIS_HOST,
+        port: process.env.REDIS_PORT,
+        pass: process.env.REDIS_PASSWORD,
+        logErrors: true,
+    })
 }));
 app.use(flash());
 app.use(passport.initialize());
@@ -53,6 +76,8 @@ app.use('/user', userRouter);
 app.use((req, res, next) => {
     const err = new Error('Not Found');
     err.status = 404;
+    logger.info('hello');
+    logger.error(err.message);
     next(err);
 });
 
